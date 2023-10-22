@@ -9,8 +9,8 @@ const size = 30
 
 // posição da cobrinha com array
 const snake = [
-    {x:200, y:200},
-    {x:230, y:200}
+    {x:0, y:0},
+   
 ]
 
 // fazer a cobra se mexer
@@ -64,7 +64,7 @@ const moveSnaker = () => {
 const gameLoop = () =>{
     clearInterval(loopId)
 
-    
+
     ctx.clearRect(0, 0, 600, 600)  // loop para limpar a tela
 
     moveSnaker()  // função mover a cobra
@@ -77,6 +77,28 @@ const gameLoop = () =>{
 
 
 gameLoop()
+
+// criando movimento com teclado 
+document.addEventListener("keydown", ({key})=> {
+    if(key == "ArrowRight" && direction != "left"){
+        direction = "right"
+    }
+
+    if(key == "ArrowLeft"  && direction != "right"){
+        direction = "left"
+    }
+
+    if(key == "ArrowDown"  && direction != "up"){
+        direction = "down"
+    }
+    
+
+    if(key == "ArrowUp"  && direction != "down"){
+        direction = "up"
+    }
+    
+    
+})
 
 
 
