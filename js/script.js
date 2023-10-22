@@ -14,7 +14,7 @@ const snake = [
 ]
 
 // fazer a cobra se mexer
- let direction  ="left"
+ let direction, loopId
 
 // função para criar a cobrinha 
 const drawSnake = () =>{
@@ -33,8 +33,8 @@ const drawSnake = () =>{
    })
 }
 
-// mover a cobrinha
 
+// Função para mover a cobrinha
 const moveSnaker = () => {
     if(!direction) return
     const head = snake[snake.length -1]
@@ -61,13 +61,24 @@ const moveSnaker = () => {
 }
 
 // função da cobra 
+const gameLoop = () =>{
+    clearInterval(loopId)
 
-setInterval(() => {
-    ctx.clearRect(0, 0, 600, 600)
-
-    moveSnaker()
-    drawSnake()
     
-}, 300);
+    ctx.clearRect(0, 0, 600, 600)  // loop para limpar a tela
+
+    moveSnaker()  // função mover a cobra
+    drawSnake() // desenha a cobra
+
+    loopId =  setTimeout(() => {
+        gameLoop()
+    }, 300) // tempo
+}
+
+
+gameLoop()
+
+
+
 
 
