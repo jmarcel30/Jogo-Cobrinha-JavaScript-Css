@@ -14,7 +14,7 @@ const snake = [
 ]
 
 // fazer a cobra se mexer
- let direction  = "right"
+ let direction  ="left"
 
 // função para criar a cobrinha 
 const drawSnake = () =>{
@@ -36,14 +36,28 @@ const drawSnake = () =>{
 // mover a cobrinha
 
 const moveSnaker = () => {
+    if(!direction) return
     const head = snake[snake.length -1]
     
-    snake.shift() //remove o ultimo elemento
+    
    
     // movendo para a direita
     if (direction == "right"){
         snake.push({x:head.x + size, y:head.y})
     }
+   // movendo para esqueda
+    if (direction == "left"){
+        snake.push({x:head.x - size, y:head.y})
+    } 
+   // movendo para baixo
+    if (direction == "down"){
+        snake.push({x:head.x, y:head.y + size})
+    }
+   // movendo para cima
+     if (direction == "up"){
+        snake.push({x:head.x, y:head.y - size})
+    }
+    snake.shift() //remove o ultimo elemento
 }
 
 // função da cobra 
