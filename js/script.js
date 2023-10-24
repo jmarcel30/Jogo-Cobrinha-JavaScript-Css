@@ -4,12 +4,13 @@ const ctx =  canvas.getContext("2d")
 
 
 
+
 // tamanho da cobrinha
 const size = 30
 
 // posição da cobrinha com array
 const snake = [
-    {x:0, y:0},
+    {x:270, y:0},
    
 ]
 
@@ -60,6 +61,29 @@ const moveSnaker = () => {
     snake.shift() //remove o ultimo elemento
 }
 
+// criar um grid
+
+const drawGrid = ()=> {
+    ctx.lineWidth = 1
+    ctx.strokeStyle = "#191919"
+
+    for (let i = 30; i < canvas.width; i += 30) {
+        ctx.beginPath()
+        ctx.lineTo(i, 0)
+        ctx.lineTo(i, 600)
+        ctx.stroke()
+
+        ctx.beginPath()
+        ctx.lineTo(0, i)
+        ctx.lineTo(600, i)
+        ctx.stroke()
+        
+    
+}
+}
+
+
+
 // função da cobra 
 const gameLoop = () =>{
     clearInterval(loopId)
@@ -69,6 +93,7 @@ const gameLoop = () =>{
 
     moveSnaker()  // função mover a cobra
     drawSnake() // desenha a cobra
+    drawGrid()
 
     loopId =  setTimeout(() => {
         gameLoop()
@@ -76,7 +101,7 @@ const gameLoop = () =>{
 }
 
 
-gameLoop()
+ gameLoop()
 
 // criando movimento com teclado 
 document.addEventListener("keydown", ({key})=> {
