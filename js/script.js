@@ -10,12 +10,28 @@ const size = 30
 
 // posição da cobrinha com array
 const snake = [
-    {x:270, y:0},
+    {x:270, y:240},
    
 ]
+// criando a comida da cobra
+const food = {
+    x: 90,
+    y: 90,
+
+    color:"yellow"
+}
 
 // fazer a cobra se mexer
  let direction, loopId
+
+const drawFood = ()=>{
+    const {x, y, color} = food
+    ctx.shadowColor = color
+    ctx.shadowBlur = 6
+    ctx.fillStyle = color
+    ctx.fillRect(x, y, size, size)
+    ctx.shadowBlur = 0
+}
 
 // função para criar a cobrinha 
 const drawSnake = () =>{
@@ -90,10 +106,11 @@ const gameLoop = () =>{
 
 
     ctx.clearRect(0, 0, 600, 600)  // loop para limpar a tela
-
+    drawGrid()
+    drawFood()
     moveSnaker()  // função mover a cobra
     drawSnake() // desenha a cobra
-    drawGrid()
+    
 
     loopId =  setTimeout(() => {
         gameLoop()
