@@ -1,31 +1,51 @@
+const canvas = document.querySelector("canvas")
+const ctx = canvas.getContext("2d")
 
-const canvas = document.getElementById("meuCanvas")
-const ctx =  canvas.getContext("2d")
+const score = document.querySelector(".score--value")
+const finalScore = document.querySelector(".final-score > span")
+const menu = document.querySelector(".menu-screen")
+const buttonPlay = document.querySelector(".btn-play")
 
+const audio = new Audio("../assets/audio.mp3")
 
-
-
-// tamanho da cobrinha
 const size = 30
 
-// posição da cobrinha com array
-const snake = [
-    {x:270, y:240},
-   
-]
-// criando a comida da cobra
-const food = {
-    x: 90,
-    y: 90,
+const initialPosition = { x: 270, y: 240 }
 
-    color:"yellow"
+let snake = [initialPosition]
+
+const incrementScore = () => {
+    score.innerText = +score.innerText + 10
 }
 
-// fazer a cobra se mexer
- let direction, loopId
+const randomNumber = (min, max) => {
+    return Math.round(Math.random() * (max - min) + min)
+}
 
-const drawFood = ()=>{
-    const {x, y, color} = food
+const randomPosition = () => {
+    const number = randomNumber(0, canvas.width - size)
+    return Math.round(number / 30) * 30
+}
+
+const randomColor = () => {
+    const red = randomNumber(0, 255)
+    const green = randomNumber(0, 255)
+    const blue = randomNumber(0, 255)
+
+    return `rgb(${red}, ${green}, ${blue})`
+}
+
+const food = {
+    x: randomPosition(),
+    y: randomPosition(),
+    color: randomColor()
+}
+
+let direction, loopId
+
+const drawFood = () => {
+    const { x, y, color } = food
+
     ctx.shadowColor = color
     ctx.shadowBlur = 6
     ctx.fillStyle = color
@@ -33,53 +53,43 @@ const drawFood = ()=>{
     ctx.shadowBlur = 0
 }
 
-// função para criar a cobrinha 
-const drawSnake = () =>{
-// cor da corinha 
+const drawSnake = () => {
     ctx.fillStyle = "#ddd"
-// função para definir a posção 
-   snake.forEach((position, index) => {
-// definir a cor da cabeça da cobra
-    if(index == snake.length -1){
-        ctx.fillStyle = "blue"
-         
 
-    }
-// criando a cobra com as posição de x e y e com size do tamanho 30
-    ctx.fillRect(position.x, position.y, size,  size)
-   })
+    snake.forEach((position, index) => {
+        if (index == snake.length - 1) {
+            ctx.fillStyle = "white"
+        }
+
+        ctx.fillRect(position.x, position.y, size, size)
+    })
 }
 
+const moveSnake = () => {
+    if (!direction) return
 
-// Função para mover a cobrinha
-const moveSnaker = () => {
-    if(!direction) return
-    const head = snake[snake.length -1]
-    
-    
-   
-    // movendo para a direita
-    if (direction == "right"){
-        snake.push({x:head.x + size, y:head.y})
+    const head = snake[snake.length - 1]
+
+    if (direction == "right") {
+        snake.push({ x: head.x + size, y: head.y })
     }
-   // movendo para esqueda
-    if (direction == "left"){
-        snake.push({x:head.x - size, y:head.y})
-    } 
-   // movendo para baixo
-    if (direction == "down"){
-        snake.push({x:head.x, y:head.y + size})
+
+    if (direction == "left") {
+        snake.push({ x: head.x - size, y: head.y })
     }
-   // movendo para cima
-     if (direction == "up"){
-        snake.push({x:head.x, y:head.y - size})
+
+    if (direction == "down") {
+        snake.push({ x: head.x, y: head.y + size })
     }
-    snake.shift() //remove o ultimo elemento
+
+    if (direction == "up") {
+        snake.push({ x: head.x, y: head.y - size })
+    }
+
+    snake.shift()
 }
 
-// criar um grid
-
-const drawGrid = ()=> {
+const drawGrid = () => {
     ctx.lineWidth = 1
     ctx.strokeStyle = "#191919"
 
@@ -93,56 +103,96 @@ const drawGrid = ()=> {
         ctx.lineTo(0, i)
         ctx.lineTo(600, i)
         ctx.stroke()
-        
-    
-}
+    }
 }
 
+const chackEat = () => {
+    const head = snake[snake.length - 1]
 
+    if (head.x == food.x && head.y == food.y) {
+        incrementScore()
+        snake.push(head)
+        audio.play()
 
-// função da cobra 
-const gameLoop = () =>{
+        let x = randomPosition()
+        let y = randomPosition()
+
+        while (snake.find((position) => position.x == x && position.y == y)) {
+            x = randomPosition()
+            y = randomPosition()
+        }
+
+        food.x = x
+        food.y = y
+        food.color = randomColor()
+    }
+}
+
+const checkCollision = () => {
+    const head = snake[snake.length - 1]
+    const canvasLimit = canvas.width - size
+    const neckIndex = snake.length - 2
+
+    const wallCollision =
+        head.x < 0 || head.x > canvasLimit || head.y < 0 || head.y > canvasLimit
+
+    const selfCollision = snake.find((position, index) => {
+        return index < neckIndex && position.x == head.x && position.y == head.y
+    })
+
+    if (wallCollision || selfCollision) {
+        gameOver()
+    }
+}
+
+const gameOver = () => {
+    direction = undefined
+
+    menu.style.display = "flex"
+    finalScore.innerText = score.innerText
+    canvas.style.filter = "blur(2px)"
+}
+
+const gameLoop = () => {
     clearInterval(loopId)
 
-
-    ctx.clearRect(0, 0, 600, 600)  // loop para limpar a tela
+    ctx.clearRect(0, 0, 600, 600)
     drawGrid()
     drawFood()
-    moveSnaker()  // função mover a cobra
-    drawSnake() // desenha a cobra
-    
+    moveSnake()
+    drawSnake()
+    chackEat()
+    checkCollision()
 
-    loopId =  setTimeout(() => {
+    loopId = setTimeout(() => {
         gameLoop()
-    }, 300) // tempo
+    }, 300)
 }
 
+gameLoop()
 
- gameLoop()
-
-// criando movimento com teclado 
-document.addEventListener("keydown", ({key})=> {
-    if(key == "ArrowRight" && direction != "left"){
+document.addEventListener("keydown", ({ key }) => {
+    if (key == "ArrowRight" && direction != "left") {
         direction = "right"
     }
 
-    if(key == "ArrowLeft"  && direction != "right"){
+    if (key == "ArrowLeft" && direction != "right") {
         direction = "left"
     }
 
-    if(key == "ArrowDown"  && direction != "up"){
+    if (key == "ArrowDown" && direction != "up") {
         direction = "down"
     }
-    
 
-    if(key == "ArrowUp"  && direction != "down"){
+    if (key == "ArrowUp" && direction != "down") {
         direction = "up"
     }
-    
-    
 })
 
+buttonPlay.addEventListener("click", () => {
+    score.innerText = "00"
+    menu.style.display = "none"
+    canvas.style.filter = "none"
 
-
-
-
+    snake = [initialPosition]
+})
